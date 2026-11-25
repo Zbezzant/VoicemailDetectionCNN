@@ -6,9 +6,8 @@ on mel spectrograms.
 
 **Author:** Zyan Bezzant (zbezzant)
 
-Built to improve on a text-only voicemail detector used in call-handling workflows: instead
-of relying only on transcribed words, the model learns acoustic patterns — continuous greeting
-speech, pacing, and tones — directly from audio.
+Instead of relying only on transcribed words, the model learns acoustic patterns —
+continuous greeting speech, pacing, and tones — directly from audio.
 
 ## How It Works
 
@@ -69,7 +68,8 @@ In the recorded run, training early-stopped at epoch 48 with a best validation l
 
 ## Dataset
 
-12,436 call recordings, hand-labeled (with manual review/correction of initial labels):
+12,436 call recordings. Initial labels came from recording metadata; these were manually
+reviewed and corrected, and additional recordings were hand-labeled as the dataset grew:
 
 | Class | Count |
 |---|---|
@@ -78,9 +78,11 @@ In the recorded run, training early-stopped at epoch 48 with a best validation l
 
 Stratified splits: **train 9,301 / validation 1,269 / held-out test 1,866** (≈ 73/12/15).
 
-Source recordings arrive as `.ogg` with labels in metadata and are preprocessed into
-`.wav` clips: converted format, fixed to 10 seconds, volume-normalized, and trimmed of
-long silences.
+Recordings are preprocessed into `.wav` clips: converted format, fixed to 10 seconds,
+volume-normalized, and trimmed of long silences.
+
+> **Note:** The call recordings are not included in this repository. Results are from this
+> specific dataset and split and may not generalize to other recordings.
 
 ## Results (held-out test set, n = 1,866)
 
@@ -109,8 +111,8 @@ most confident false positives and false negatives:
 ```
 .
 ├── voicemail_detector.ipynb      # Main notebook
-├── answering_machine/            # Voicemail .wav recordings
-├── non_answering_machine/        # Non-voicemail .wav recordings
+├── answering_machine/            # (create locally) Voicemail .wav recordings — not included
+├── non_answering_machine/        # (create locally) Non-voicemail .wav recordings — not included
 └── cache/                        # Created automatically
     ├── mel_specs.npy             # Cached mel spectrograms
     ├── labels.npy                # Cached labels
@@ -131,9 +133,10 @@ PyTorch 2.5.1+cu121 and librosa 0.11.0 on an NVIDIA RTX 3060 (12 GB).
 pip install torch torchaudio librosa numpy scikit-learn matplotlib seaborn tqdm jupyter
 ```
 
-Place cleaned 10-second `.wav` files in the two class folders, then run the notebook
-top to bottom. The first run extracts and caches spectrograms; later runs load from
-`cache/`. On Windows, DataLoader workers are automatically set to 0.
+Place your own labeled 10-second `.wav` recordings in the two class folders (not included
+in this repo), then run the notebook top to bottom. The first run extracts and caches
+spectrograms; later runs load from `cache/`. On Windows, DataLoader workers are
+automatically set to 0.
 
 ## Usage
 
@@ -148,9 +151,7 @@ label, prob, source = predict("path/to/call.wav", threshold=0.5)
 **Batch sorting** — the final cell walks an input folder of `.wav` files and sorts them
 into `AIFoundVoicemails/` and `AINotVoicemails/`, plus ten confidence-bucket folders
 (`confidence_00-10` … `confidence_90-100`). Configure `INPUT_DIR`, `OUTPUT_ROOT`,
-`THRESHOLD`, and the `MOVE_FILES` copy/move toggle at the top of the cell. In its recorded
-run it processed 2,007 files in ~25 s (387 flagged as voicemail, 1,620 as non-voicemail,
-0 errors).
+`THRESHOLD`, and the `MOVE_FILES` copy/move toggle at the top of the cell.
 
 ## Future Work
 
