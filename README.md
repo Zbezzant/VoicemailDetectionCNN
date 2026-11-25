@@ -61,22 +61,22 @@ stability, so the sigmoid lives in the loss / inference step rather than the mod
 | Scheduler | `ReduceLROnPlateau` (patience=6, factor=0.5) |
 | Gradient clipping | `clip_grad_norm_` at max_norm=1.0 |
 | Batch size | 32 |
-| Max epochs / early stopping | 60 / patience of 20 epochs on val loss |
+| Max epochs / early stopping | 60 / patience of 10 epochs on val loss |
 
-In the recorded run, training early-stopped at epoch 48 with a best validation loss of
-**0.2061**; the best checkpoint is saved to `cache/best_model.pt`.
+In the recorded run, training early-stopped at epoch 33 with a best validation loss of
+**0.1426**; the best checkpoint is saved to `cache/best_model.pt`.
 
 ## Dataset
 
-12,436 call recordings. Initial labels came from recording metadata; these were manually
+12,501 call recordings. Initial labels came from recording metadata; these were manually
 reviewed and corrected, and additional recordings were hand-labeled as the dataset grew:
 
 | Class | Count |
 |---|---|
-| Answering machine | 6,249 |
-| Non-answering machine | 6,187 |
+| Answering machine | 6,298 |
+| Non-answering machine | 6,203 |
 
-Stratified splits: **train 9,301 / validation 1,269 / held-out test 1,866** (≈ 73/12/15).
+Stratified splits: **train 9,350 / validation 1,275 / held-out test 1,876** (≈ 75/10/15).
 
 Recordings are preprocessed into `.wav` clips: converted format, fixed to 10 seconds,
 volume-normalized, and trimmed of long silences.
@@ -84,17 +84,17 @@ volume-normalized, and trimmed of long silences.
 > **Note:** The call recordings are not included in this repository. Results are from this
 > specific dataset and split and may not generalize to other recordings.
 
-## Results (held-out test set, n = 1,866)
+## Results (held-out test set, n = 1,876)
 
 | Metric | Value |
 |---|---|
-| Accuracy | **93%** |
-| ROC-AUC | **0.9762** |
+| Accuracy | **95%** |
+| ROC-AUC | **0.9871** |
 
 | Class | Precision | Recall | F1 | Support |
-|---|---|---|---|---|
-| Non-answering machine | 0.95 | 0.90 | 0.93 | 928 |
-| Answering machine | 0.91 | 0.95 | 0.93 | 938 |
+|---|---:|---:|---:|---:|
+| Non-answering machine | 0.95 | 0.94 | 0.94 | 931 |
+| Answering machine | 0.94 | 0.95 | 0.95 | 945 |
 
 ## Error Analysis
 
@@ -110,14 +110,14 @@ most confident false positives and false negatives:
 
 ```
 .
-├── voicemail_detector.ipynb      # Main notebook
-├── answering_machine/            # (create locally) Voicemail .wav recordings — not included
-├── non_answering_machine/        # (create locally) Non-voicemail .wav recordings — not included
-└── cache/                        # Created automatically
-    ├── mel_specs.npy             # Cached mel spectrograms
-    ├── labels.npy                # Cached labels
-    ├── valid_paths.pkl           # File paths (used by the error-analysis table)
-    ├── best_model.pt             # Best checkpoint by validation loss
+├── CNN_voicemail_detector.ipynb   # Main notebook
+├── answering_machine/             # (create locally) Voicemail .wav recordings — not included
+├── non_answering_machine/         # (create locally) Non-voicemail .wav recordings — not included
+└── cache/                         # Created automatically
+    ├── mel_specs.npy              # Cached mel spectrograms
+    ├── labels.npy                 # Cached labels
+    ├── valid_paths.pkl            # File paths (used by the error-analysis table)
+    ├── best_model.pt              # Best checkpoint by validation loss
     ├── training_history.png
     ├── confusion_matrix.png
     ├── mel_regular_visualization.png
@@ -167,7 +167,7 @@ into `AIFoundVoicemails/` and `AINotVoicemails/`, plus ten confidence-bucket fol
 - [Very Deep Convolutional Networks (VGG, arXiv:1409.1556)](https://arxiv.org/abs/1409.1556)
 - [Attention-Based Models for Speech Recognition (arXiv:1610.02391)](https://arxiv.org/abs/1610.02391)
 - [PyTorch CIFAR-10 Tutorial](https://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html)
-- [BCEWithLogitsLoss](https://pytorch.org/docs/stable/generated/torch.nn.BCEWithLogitsLoss.html) · [AdamW](https://pytorch.org/docs/stable/generated/torch.optim.AdamW.html) · [ReduceLROnPlateau](https://pytorch.org/docs/stable/generated/torch.optim.lr_scheduler.ReduceLROnPlateau.html) · [clip_grad_norm_](https://pytorch.org/docs/stable/generated/torch.nn.utils.clip_grad_norm_.html)
+- [BCEWithLogitsLoss](https://pytorch.org/docs/stable/generated/torch.nn.BCEWithLogitsLoss.html) · [AdamW](https://pytorch.org/docs/stable/generated/torch.optim.AdamW.html) · [ReduceLROnPlateau](https://pytorch.org/docs/stable/generated/torch.nn.lr_scheduler.ReduceLROnPlateau.html) · [clip_grad_norm_](https://pytorch.org/docs/stable/generated/torch.nn.utils.clip_grad_norm_.html)
 - [train_test_split](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html) · [classification_report](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.classification_report.html) · [roc_auc_score](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_auc_score.html) · [confusion_matrix](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.confusion_matrix.html)
 - [MFCCs for Speech Recognition (GeeksforGeeks)](https://www.geeksforgeeks.org/nlp/mel-frequency-cepstral-coefficients-mfcc-for-speech-recognition/)
 - [Audio Classification Using CNNs and Transformers (dev.to)](https://dev.to/aditi_baheti_f4a40487a091/an-in-depth-look-at-audio-classification-using-cnns-and-transformers-1981)
